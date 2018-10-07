@@ -96,7 +96,9 @@ def lexer(file_name):
         #Split each individual line into words separated by a space and put it in a list.
         clist = content[j].split(" ")
        
-        #Parse each line and print out what each token is. 
+        #Parse each line and print out what each token is.
+        print("\n")
+        comment = False
         for k in range(0, len(clist)):
             
             #Variable used to identify separators. 
@@ -104,6 +106,24 @@ def lexer(file_name):
             #If there is an empty line skip the line. 
             if len(pword) == 0:
                 continue
+            #Check if the symbol is a comment. if it is, then every subsequent token will be a comment until "*]" is reached.
+            
+            if(pword[:2] == "[*"):
+                print(pword[:2] + "\t" + "Comment")
+                print(pword[2:] + "\t" + "Comment")
+                comment = True
+                continue
+
+            if(pword[-2:] == "*]"):
+                print(pword[-2:] + "\t" + "Comment")
+                print(pword[:-2] + "\t" + "Comment")
+                comment = False
+                continue
+
+            if (comment == True):
+                print(clist[k] + "\t" + "Comment")
+                continue
+            
             
             #Check to see if there is an seperator at the beginning of the word. If there is, separate it from the word and print out the seperator and then the token that encapsulates it.
             if (pword[0] in sep):
