@@ -139,6 +139,7 @@ def qualifier():
 
 def IDs():
     global current_lexeme
+    global position_in_list
     print("<IDs> -> <Identifier> | <Identifier>, <IDs>")
 
     position_in_list += 1
@@ -158,6 +159,7 @@ def statement_list():
 
 def statement():
     global current_lexeme
+    global position_in_list
 
     print("<Statement -> <Compound> | <Assign> | <If> |  <Return> | <Print> | <Scan> | <While>")
     current_lexeme = list_of_lexemes[position_in_list]
@@ -189,6 +191,7 @@ def compound():
 
 def assign():
     global current_lexeme
+    global position_in_list
     print("<Assign> -> <Identifier> = <Expression> ;")
 
     if lexer(current_lexeme) == "identifier":
@@ -212,6 +215,8 @@ def expression():
 
 def expression_prime():
     global current_lexeme
+    global position_in_list
+
     print("<Expression Prime> -> + <Term> <Expression> | - <Term> <Expression> | epsilon")
 
     if current_lexeme == "+" or current_lexeme == "-":
@@ -232,6 +237,8 @@ def term():
 
 def term_prime():
     global current_lexeme
+    global position_in_list
+
     print("<Term Prime> -> * <Factor> <Term> | / <Factor> <Term> | epsilon")
 
     if current_lexeme == "*" or current_lexeme == "/":
@@ -245,6 +252,8 @@ def term_prime():
 
 def factor():
     global current_lexeme
+    global position_in_list
+
     print("<Factor> -> - <Primary> | <Primary>")
 
     if current_lexeme == "-":
@@ -256,8 +265,11 @@ def factor():
 
 
 def primary():
-    print("<Primary> -> <Identifier> | <Integer> | <Identifier> ( <IDs> ) | ( <Expression> | <Real> | true | false")
     global current_lexeme
+    global position_in_list
+
+    print("<Primary> -> <Identifier> | <Integer> | <Identifier> ( <IDs> ) | ( <Expression> | <Real> | true | false")
+
     if lexer(current_lexeme) == "identifier":
         if list_of_lexemes[position_in_list + 1] == "(":
             position_in_list += 1
