@@ -341,6 +341,8 @@ def Function():
                     Body()
                     print("Finished with Body")
                     print("Current lexeme is: " + current_lexeme)
+                    position_in_list+=1
+                    current_lexeme = list_of_lexemes[position_in_list]
                 else:
                     print("Expected ')', but instead recieved" + current_lexeme)
         
@@ -611,6 +613,7 @@ def Print():
     print("Current lexeme is: " + current_lexeme)
     print("<Print> -> put <Expression>);")
     if (current_lexeme == "put"):
+        assembly.append("STDOUT")
         expression()
 
 def Scan():
@@ -619,6 +622,7 @@ def Scan():
     print("Current lexeme is: " + current_lexeme)
     print("<Scan> -> get (<IDs>);")    
     if (current_lexeme == "get"):
+        assembly.append("STDIN")
         position_in_list +=1
         current_lexeme = list_of_lexemes[position_in_list]
         print ("found get")
@@ -681,7 +685,7 @@ def Relop():
     global current_lexeme
     print("Current lexeme is: " + current_lexeme)
     print("<Relop> -> ")
-    if (current_lexeme == ">" or current_lexeme == "<"):
+    if (current_lexeme == "==" or current_lexeme == "^=" or current_lexeme == ">" or current_lexeme == "<" or current_lexeme == "=>" or current_lexeme == "=<"):
         print (current_lexeme)
     
     
@@ -701,6 +705,10 @@ def expression_prime():
     print("<Expression Prime> -> + <Term> <Expression> | - <Term> <Expression> | epsilon")
     
     if current_lexeme == "+" or current_lexeme == "-":
+        if (current_lexeme == "+"):
+            assembly.append("ADD")
+        elif(current_lexeme == "-"):
+            assembly.append("SUB")
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
         term()
@@ -727,6 +735,10 @@ def term_prime():
     print("<Term Prime> -> * <Factor> <Term> | / <Factor> <Term> | epsilon")
 
     if current_lexeme == "*" or current_lexeme == "/":
+        if current_lexeme == "*":
+            assembly.append("MUL")
+        elif current_lexeme == "/":
+            assembly.append("DIV")
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
         print("Current lexeme is: " + current_lexeme)
@@ -790,8 +802,8 @@ def primary():
     elif current_lexeme == "false":
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
-    elif current_lexeme == "*" or current_lexeme == "/":
-        term_prime()
+##    elif current_lexeme == "*" or current_lexeme == "/":
+##        term_prime()
     else:
         print("Error in primary function")
 
