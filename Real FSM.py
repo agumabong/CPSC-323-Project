@@ -8,7 +8,9 @@
 current_lexeme = None
 global list_of_lexemes
 global position_in_list
+global assembly
 
+assembly = []
 list_of_lexemes = []
 
 #Array to hold the integer FSM
@@ -248,9 +250,11 @@ def rat18f():
     print("<Rat18F> -> <Opt Function Definitions> $$ <Opt Declaration List> <Statement List> $$")
     current_lexeme = list_of_lexemes[position_in_list]
     Opt_Function_Definitions()
-    position_in_list +=1
+    #position_in_list +=1
     current_lexeme = list_of_lexemes[position_in_list]
     print("Current lexeme is: " + current_lexeme)
+    #position_in_list+=1
+    current_lexeme = list_of_lexemes[position_in_list]
     if (len(current_lexeme) == 0):
         position_in_list+=1
         current_lexeme = list_of_lexemes[position_in_list]
@@ -286,7 +290,7 @@ def Opt_Function_Definitions():
     global position_in_list
     print("Current lexeme is: " + current_lexeme)
     print("<Opt Function Definitions> -> <Function Definitions> | <Empty>")
-    if (current_lexeme == "" or current_lexeme == ''):
+    if (current_lexeme != "function"):
         empty()
     else:
         Function_Definitions()
@@ -297,7 +301,7 @@ def Function_Definitions():
     global current_lexeme
     global position_in_list
     print("Current lexeme is: " + current_lexeme)
-    print ("<Function Definitions> -> <Functions | <Functions> < Function Definitions>")
+    print ("<Function Definitions> -> <Functions> | <Functions> < Function Definitions>")
     Function()
 
 def Function():
@@ -331,7 +335,6 @@ def Function():
                 if (current_lexeme == ")"):
                     position_in_list +=1
                     current_lexeme = list_of_lexemes[position_in_list]
-                    print("Current lexeme is: " + current_lexeme)
                     Opt_Declaration_List()
                     print ("Finished with Opt Declaration List")
                     print("Current lexeme is: " + current_lexeme)
@@ -364,6 +367,7 @@ def Parameter():
     print("Current lexeme is: " + current_lexeme)
     print ("<Parameter> -> <IDs> : <Qualifier>")
     IDs()
+    print("Current lexeme is: " + current_lexeme)
     if (current_lexeme != ":"):
         print("Error: Expected ':' but instead recieved: " + current_lexeme)
     if (current_lexeme == ":"):
@@ -434,12 +438,17 @@ def Declaration_List():
     print("Current lexeme is: " + current_lexeme)
     print("<Declaration List> -> <Declaration> ; | <Declaration> ; <Declaration List>")
     Declaration()
+    print("Hey")
     if (current_lexeme != ";"):
         print("Error: Expected '{' but instead recieved: " + current_lexeme)
-    if list_of_lexemes[position_in_list] == ";":
-        position_in_list +=1
+    else:
+        print("Current lexeme is: " + current_lexeme)
+        position_in_list+=1
         current_lexeme = list_of_lexemes[position_in_list]
-        Declaration_List()
+        
+##    if list_of_lexemes[position_in_list] == ";":
+##        position_in_list +=1
+##        current_lexeme = list_of_lexemes[position_in_list]
 
 def Declaration():
     global current_lexeme
@@ -461,6 +470,7 @@ def IDs():
     if (lexer(current_lexeme) == "identifier"):
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
+        print("Current lexeme is: " + current_lexeme)
         if current_lexeme == ",":
             position_in_list +=1
             current_lexeme = list_of_lexemes[position_in_list]
@@ -513,7 +523,7 @@ def compound():
     print("Current lexeme is: " + current_lexeme)
     if (current_lexeme != "{"):
         print("Error: Expected '{' but instead recieved: " + current_lexeme)
-    if (current_lexeme == "{"):
+    if (current_lexeme == "{"):        
         position_in_list +=1
         current_lexeme = list_of_lexemes[position_in_list]        
         statement_list()
@@ -531,11 +541,14 @@ def assign():
         print("Error: Expected 'identifier' but instead recieved: " + current_lexeme)
     if lexer(current_lexeme) == "identifier":
         if list_of_lexemes[position_in_list + 1] == "=":
+            assembly.append("PUSHI" + list_of_lexemes[position_in_list+2])
+            assembly.append("POPM")
             position_in_list += 2
             current_lexeme = list_of_lexemes[position_in_list]
             expression()
-            position_in_list +=1
-            current_lexeme = list_of_lexemes[position_in_list]
+            print("Current lexeme is: " + current_lexeme)
+##            position_in_list +=1
+##            current_lexeme = list_of_lexemes[position_in_list]
             if current_lexeme != ";":
                 print("Error: Expected ';' but instead recieved: " + current_lexeme)
     else:
@@ -581,9 +594,7 @@ def Return():
     global position_in_list
     print("Current lexeme is: " + current_lexeme)    
     print("<Return> -> return ; | return <Expression>")
-    if (current_lexeme == "return"):
-       position_in_list +=1
-       current_lexeme = list_of_lexemes[position_in_list]
+    if (current_lexeme == "return"):       
        print("Current lexeme is: " + current_lexeme)
        if (current_lexeme == ";"):
            print ("return ;")
@@ -591,6 +602,8 @@ def Return():
            position_in_list +=1
            current_lexeme = list_of_lexemes[position_in_list]
            expression()
+    else:
+        print("Error, expected return but instead recieved: " + current_lexeme)
 
 def Print():
     global current_lexeme
@@ -790,5 +803,6 @@ file = input("Please enter the name of a file to read.")
 position_in_list = 0
 lexer2(file)
 rat18f()
+print (assembly)
 
 q = input("Press any key to exit")
