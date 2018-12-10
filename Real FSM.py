@@ -543,7 +543,7 @@ def assign():
         print("Error: Expected 'identifier' but instead recieved: " + current_lexeme)
     if lexer(current_lexeme) == "identifier":
         if list_of_lexemes[position_in_list + 1] == "=":
-            assembly.append("PUSHI" + list_of_lexemes[position_in_list+2])
+            assembly.append("PUSHI " + list_of_lexemes[position_in_list+2])
             assembly.append("POPM")
             position_in_list += 2
             current_lexeme = list_of_lexemes[position_in_list]
@@ -686,6 +686,18 @@ def Relop():
     print("Current lexeme is: " + current_lexeme)
     print("<Relop> -> ")
     if (current_lexeme == "==" or current_lexeme == "^=" or current_lexeme == ">" or current_lexeme == "<" or current_lexeme == "=>" or current_lexeme == "=<"):
+        if (current_lexeme == "<"):
+            assembly.append("LES")
+        elif(current_lexeme == ">"):
+            assembly.append("GRT")
+        elif(current_lexeme == "=="):
+            assembly.append("EQU")
+        elif(current_lexeme == "^="):
+            assembly.append("NEQ")
+        elif(current_lexeme == ">="):
+            assembly.append("GEQ")
+        elif(current_lexeme == "<="):
+            assembly.append("LEQ")
         print (current_lexeme)
     
     
