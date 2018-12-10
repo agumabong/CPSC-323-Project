@@ -251,12 +251,15 @@ def lexer(token):
 ##        print("integer")
         return "integer"   
 
+
+
 def rat18f():
     global current_lexeme
     global position_in_list
 
     print("<Rat18F> -> <Opt Function Definitions> $$ <Opt Declaration List> <Statement List> $$")
     current_lexeme = list_of_lexemes[position_in_list]
+    print("Current lexeme: " + current_lexeme + "\n")
 
     Opt_Function_Definitions()
 
@@ -282,6 +285,8 @@ def Opt_Function_Definitions():
     global position_in_list
 
     print("<Opt Function Definitions> -> <Function Definitions> | <Empty>")
+    print("Current lexeme: " + current_lexeme + "\n")
+
     if (current_lexeme == "" or current_lexeme == ''):
         empty()
     else:
@@ -293,10 +298,11 @@ def Function_Definitions():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)
-    print ("<Function Definitions> -> <Function> | <Function> < Function Definitions>")
+    print("<Function Definitions> -> <Function> | <Function> < Function Definitions>")
+    print("Current lexeme: " + current_lexeme + "\n")
 
-    while (current_lexeme == "function"):
+    # Implement this differently? Does it still have to show product rules for function() and function_def()?
+    if (current_lexeme == "function"):
         Function()
         Function_Definitions()
 
@@ -307,7 +313,8 @@ def Function():
     global current_lexeme
     global position_in_list
 
-    print ("<Function> -> function <Identifier> ( <Opt Parameter List> ) <Opt Declaration List> <Body>")
+    print("<Function> -> function <Identifier> ( <Opt Parameter List> ) <Opt Declaration List> <Body>")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     if (current_lexeme == "function"):
         position_in_list += 1
@@ -344,8 +351,8 @@ def Function():
 def Opt_Parameter_List():
     global current_lexeme
 
-    print("Current lexeme is: " + current_lexeme)
     print("<Opt Parameter List> -> <Parameter List> | <Empty>")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     if (current_lexeme == "" or current_lexeme == ''):
         empty()
@@ -353,8 +360,8 @@ def Opt_Parameter_List():
         Parameter_List()
 
 def Parameter_List():
-    print("Current lexeme is: " + current_lexeme)
     print("<Parameter List> -> <Parameter> | <Parameter> , <Parameter List>")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     Parameter()
 
@@ -367,8 +374,8 @@ def Parameter():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)
     print ("<Parameter> -> <IDs> : <Qualifier>")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     IDs()
 
@@ -386,8 +393,8 @@ def qualifier():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)
     print("<Qualifier -> int | boolean | real")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     if (current_lexeme == "int" or current_lexeme == "boolean" or current_lexeme == "real"):
         position_in_list += 1
@@ -419,7 +426,7 @@ def Body():
     global position_in_list
 
     print("<Body> -> { <Statement List> }")
-    print("Current lexeme is: " + current_lexeme)
+    print("Current lexeme: " + current_lexeme + "\n")
 
     if (current_lexeme == "{"):
         position_in_list += 1
@@ -455,8 +462,8 @@ def Body():
 
 
 def Opt_Declaration_List():
-    print("Current lexeme is: " + current_lexeme)
     print ("<Opt Declaration List> -> <Declaration List> | <Empty>")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     if (current_lexeme == "int" or current_lexeme == "boolean" or current_lexeme == "real"):
         Declaration_List()
@@ -467,8 +474,8 @@ def Declaration_List():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)
     print("<Declaration List> -> <Declaration> ; | <Declaration> ; <Declaration List>")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     Declaration()
 
@@ -496,8 +503,8 @@ def Declaration():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)
     print("<Declaration> -> <Qualifier> <IDs>")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     qualifier()
 ##    position_in_list +=1
@@ -510,13 +517,13 @@ def IDs():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)
     print("<IDs> -> <Identifier> | <Identifier>, <IDs>")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     if (lexer(current_lexeme) == "identifier"):
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
-
+        print("Current lexeme " + current_lexeme) # Delete after
         if (current_lexeme == ","):
             position_in_list += 1
             current_lexeme = list_of_lexemes[position_in_list]
@@ -540,18 +547,21 @@ def IDs():
 
 
 def statement_list():
-    print("Current lexeme is: " + current_lexeme)
     print("<Statement List> -> <Statement> | <Statement> <Statement List>")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     statement()
+
+    if(current_lexeme == "(" or current_lexeme == "if" or current_lexeme == "return" or current_lexeme == "put" or current_lexeme == "get" or current_lexeme == "while" or lexer(current_lexeme) == "identifier"):
+        statement_list()
 
 
 def statement():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)
     print("<Statement -> <Compound> | <Assign> | <If> |  <Return> | <Print> | <Scan> | <While>")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     """
     current_lexeme = list_of_lexemes[position_in_list]
@@ -562,22 +572,22 @@ def statement():
 ##        print ("Found empty lexeme, skipping.")
 ##        print("Current lexeme is: " + current_lexeme)
     """
-    if current_lexeme == "{":
+    if (current_lexeme == "{"):
         compound()
-    if (current_lexeme == "if"):
+    elif (current_lexeme == "if"):
         If()
-    if(current_lexeme == "return"):
+    elif (current_lexeme == "return"):
         Return()
-    if(current_lexeme == "put"):
+    elif (current_lexeme == "put"):
         Print()
-    if(current_lexeme == "get"):
+    elif (current_lexeme == "get"):
         Scan()
-    if(current_lexeme == "while"):
+    elif (current_lexeme == "while"):
         While()
-    if lexer(current_lexeme) == "identifier":
+    elif (lexer(current_lexeme) == "identifier"):
         assign()
-        
-    sys.exit("Error: Expected {, if, return, put, get, or 'identifier' but instead received: " + current_lexeme)
+    else:
+        sys.exit("Error: Expected {, if, return, put, get, or 'identifier' but instead received: " + current_lexeme)
 
 
 def compound():
@@ -585,7 +595,7 @@ def compound():
     global position_in_list
 
     print("<Compound> -> { <Statement List> }")
-    print("Current lexeme is: " + current_lexeme)
+    print("Current lexeme is: " + current_lexeme + "\n")
 
     if (current_lexeme == "{"):
         position_in_list += 1
@@ -617,8 +627,8 @@ def assign():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)
     print("<Assign> -> <Identifier> = <Expression> ;")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     if (lexer(current_lexeme) == "identifier"):
         position_in_list += 1
@@ -662,8 +672,9 @@ def If():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)
+
     print("<If> -> if ( <Condition> ) <Statement> ifend | if (<Condition> ) <Statement> else <Statement> ifend")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     if (current_lexeme == "if"):
         position_in_list += 1
@@ -731,8 +742,8 @@ def Return():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)    
     print("<Return> -> return ; | return <Expression>")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     if (current_lexeme == "return"):
         position_in_list +=1
@@ -759,8 +770,8 @@ def Print():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)
     print("<Print> -> put <Expression>);")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     if (current_lexeme == "put"):
         position_in_list += 1
@@ -794,17 +805,18 @@ def Scan():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)
     print("<Scan> -> get (<IDs>);")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     if (current_lexeme == "get"):
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
 
         if (current_lexeme == "("):
+            print("Current lexeme before increment" + current_lexeme)
             position_in_list += 1
             current_lexeme = list_of_lexemes[position_in_list]
-
+            print("Current lexeme in Scan: " + current_lexeme) # Delete after
             IDs()
 
             if(current_lexeme == ")"):
@@ -829,8 +841,8 @@ def While():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)
     print("<While> -> while (<Condition>) <Statement> whileend")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     if (current_lexeme == "while"):
         position_in_list +=1
@@ -865,9 +877,9 @@ def While():
 def Condition():
     global current_lexeme
 
-    print("Current lexeme is: " + current_lexeme)
     print("<Condition> -> <Expression> < Relop> < Expression>")
-    
+    print("Current lexeme: " + current_lexeme + "\n")
+
     expression()
     Relop()
     expression()
@@ -877,8 +889,8 @@ def Condition():
 def Relop():
     global current_lexeme
 
-    print("Current lexeme is: " + current_lexeme)
     print("<Relop> -> == | ^= | > | < | => | =<")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     if (current_lexeme == "==" or current_lexeme == "^=" or current_lexeme == ">" or current_lexeme == "<" or current_lexeme == "=>" or current_lexeme == "=<"):
         position_in_list += 1
@@ -890,8 +902,8 @@ def Relop():
           
 
 def expression():
-    print("Current lexeme is: " + current_lexeme)
     print("<Expression> -> <Term> <Expression Prime>")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     term()
 
@@ -902,9 +914,9 @@ def expression_prime():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)
     print("<Expression Prime> -> + <Term> <Expression> | - <Term> <Expression> | epsilon")
-    
+    print("Current lexeme: " + current_lexeme + "\n")
+
     if (current_lexeme == "+" or current_lexeme == "-"):
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
@@ -913,15 +925,15 @@ def expression_prime():
 
         expression()
     else:
-        empty()
+        print("epsilon")
 
 
 def term():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)
     print("<Term> -> <Factor> <Term Prime>")
+    print("Current lexeme: " + current_lexeme + "\n")
 
 ##    position_in_list +=1
 ##    current_lexeme = list_of_lexemes[position_in_list]
@@ -934,8 +946,8 @@ def term_prime():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)
     print("<Term Prime> -> * <Factor> <Term> | / <Factor> <Term> | epsilon")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     if (current_lexeme == "*" or current_lexeme == "/"):
         position_in_list += 1
@@ -947,7 +959,7 @@ def term_prime():
 
         term()
     else:
-        empty()
+        print("epsilon")
 
 
 
@@ -955,8 +967,8 @@ def factor():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)
     print("<Factor> -> - <Primary> | <Primary>")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     # Maybe: Error check for '-'
     # Is this supposed to be negative?
@@ -974,8 +986,8 @@ def primary():
     global current_lexeme
     global position_in_list
 
-    print("Current lexeme is: " + current_lexeme)
     print("<Primary> -> <Identifier> | <Integer> | <Identifier> ( <IDs> ) | ( <Expression> ) | <Real> | true | false")
+    print("Current lexeme: " + current_lexeme + "\n")
 
     if (lexer(current_lexeme) == "identifier"):
         position_in_list += 1
@@ -995,6 +1007,7 @@ def primary():
             current_lexeme = list_of_lexemes[position_in_list]
             
     elif (lexer(current_lexeme) == "integer"):
+        print("It read it as an integer.")
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
         
@@ -1025,14 +1038,16 @@ def empty():
     global current_lexeme
 
     print("<Empty> -> epsilon")
+    print("Current lexeme: " + current_lexeme + "\n")
     position_in_list += 1
     current_lexeme = list_of_lexemes[position_in_list]
 
 
 # file = input("Please enter the name of a file to read.")
 lexer2("test.txt")
+print(list_of_lexemes)
 rat18f()
 
-print(list_of_lexemes)
+
 
 q = input("Press any key to exit")
