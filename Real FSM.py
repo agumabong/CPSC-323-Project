@@ -5,6 +5,7 @@
 
 
 # Variables to keep track of top-down parser
+import time
 current_lexeme = None
 global list_of_lexemes
 global position_in_list
@@ -111,6 +112,7 @@ def lexer2(file_name):
         
         #Split each individual line into words separated by a space and put it in a list.
         clist = content[j].split(" ")
+ 
        
         #Parse each line and print out what each token is.
         #print("\n")
@@ -143,14 +145,24 @@ def lexer2(file_name):
             
             
             #Check to see if there is an seperator at the beginning of the word. If there is, separate it from the word and print out the seperator and then the token that encapsulates it.
-            if (pword[0] in sep):
+            if (pword[0] in sep and pword[len(pword)-1] in sep):
                 print(pword[0] + "\t \t \t" + "Seperator")
+                fsep = pword[0]
                 list_of_lexemes.append(pword[0])
-                pword = pword[1:]
                 if (len(pword) ==1 ):
                     continue
                 if pword == '' or pword == "":
                     continue
+                pword = pword[1:]
+                if (pword[len(pword)-1] == ";"):
+                    q = len(pword)-1                        
+                    zsep = pword[q:]
+                    pword = pword[:q]
+                
+                z = len(pword)-1
+                lsep = pword[z:]
+                pword = pword[:z]
+                
                 if (iden(pword) == True):
                     print(pword + "\t \t \t" + "Identifier")
                     list_of_lexemes.append(pword)
@@ -160,6 +172,11 @@ def lexer2(file_name):
                 elif(integer(pword) == True):
                     print(pword + "\t \t \t" + "Integer")
                     list_of_lexemes.append(pword)
+                    
+                list_of_lexemes.append(lsep)
+                print(lsep + "\t \t \t" + "Seperator")
+                list_of_lexemes.append(zsep)
+                print(zsep + "\t \t \t" + "Seperator")
             #Check to see if there is an seperator at the end of the word. If there is, separate it from the word and print out the seperator and then the token that encapsulates it.
             elif(pword[len(pword)-1] in sep):
                 pend = pword[len(pword)-1]
@@ -486,6 +503,7 @@ def statement_list():
     print("Current lexeme is: " + current_lexeme)
     print("<Statement List> -> <Statement> | <Statement> <Statement List>")
     statement()
+   
 
 
 def statement():
@@ -514,7 +532,7 @@ def statement():
         While()
     if lexer(current_lexeme) == "identifier":
         assign()
-        
+    else:        
         print("Error: Expected {, if, return, put, get, or 'identifier' but instead recieved: " + current_lexeme)
 
 
@@ -621,12 +639,14 @@ def Scan():
     global position_in_list
     print("Current lexeme is: " + current_lexeme)
     print("<Scan> -> get (<IDs>);")    
-    if (current_lexeme == "get"):
+    if (current_lexeme == "get"): 
         assembly.append("STDIN")
         position_in_list +=1
         current_lexeme = list_of_lexemes[position_in_list]
         print ("found get")
         if (current_lexeme == "("):
+            position_in_list +=1
+            current_lexeme = list_of_lexemes[position_in_list]
             IDs()
             position_in_list +=1
             current_lexeme = list_of_lexemes[position_in_list]
@@ -675,11 +695,12 @@ def Print():
 def Condition():
     global current_lexeme
     print("Current lexeme is: " + current_lexeme)
-    print("<Condition> -> <Expresion> < Relop> < Expression>")
-    
+    print("<Condition> -> <Expresion> < Relop> < Expression>")    
     expression()
+    assembly.append("PUSHM" + current_lexeme)
     Relop()
     expression()
+    assembly.append("PUSHM" + current_lexeme)
 
 def Relop():
     global current_lexeme
@@ -826,6 +847,8 @@ def empty():
 file = input("Please enter the name of a file to read.")
 position_in_list = 0
 lexer2(file)
+print(list_of_lexemes)
+
 rat18f()
 print (assembly)
 
