@@ -149,6 +149,7 @@ def lexer2(file_name):
 
             #Check to see if there is an seperator at the beginning of the word. If there is, separate it from the word and print out the seperator and then the token that encapsulates it.
             if (pword[0] in sep and pword[len(pword)-1] in sep):
+                zled = False
                 print(pword[0] + "\t \t \t" + "Seperator")
                 fsep = pword[0]
                 list_of_lexemes.append(pword[0])
@@ -161,6 +162,7 @@ def lexer2(file_name):
                     q = len(pword)-1                        
                     zsep = pword[q:]
                     pword = pword[:q]
+                    zled = True
                 
                 z = len(pword)-1
                 lsep = pword[z:]
@@ -175,11 +177,11 @@ def lexer2(file_name):
                 elif(integer(pword) == True):
                     print(pword + "\t \t \t" + "Integer")
                     list_of_lexemes.append(pword)
-                    
-                list_of_lexemes.append(lsep)
-                print(lsep + "\t \t \t" + "Seperator")
-                list_of_lexemes.append(zsep)
-                print(zsep + "\t \t \t" + "Seperator")
+                if zled == True:
+                    list_of_lexemes.append(lsep)
+                    print(lsep + "\t \t \t" + "Seperator")
+                    list_of_lexemes.append(zsep)
+                    print(zsep + "\t \t \t" + "Seperator")
 
             #######################################    
             if (pword[0] in sep):
@@ -327,7 +329,7 @@ def rat18f():
         while(position_in_list < len(list_of_lexemes)-1):
             statement_list()
             position_in_list +=1
-            current_lexeme = list_of_lexemes[position_in_list]
+            current_lexeme = list_of_lexemes[position_in_list-1]
         if (current_lexeme != "$$"):
             print("Error, expected: '$$' but recieved" + current_lexeme)
         if (current_lexeme == "$$"):
@@ -553,19 +555,20 @@ def statement():
 ##        print("Current lexeme is: " + current_lexeme)
     if current_lexeme == "{":
         compound()
-    if (current_lexeme == "}"):
+    elif (current_lexeme == "}"):
             print("Current lexeme is: " + current_lexeme)
-    if (current_lexeme == "if"):
+    elif (current_lexeme == "if"):
         If()
-    if(current_lexeme == "return"):
+    elif(current_lexeme == "return"):
         Return()
-    if(current_lexeme == "put" or current_lexeme == " put"):
+    elif(current_lexeme == "put"):
+        print("found put")
         Print()
-    if(current_lexeme == "get"):
+    elif(current_lexeme == "get"):
         Scan()
-    if(current_lexeme == "while"):
+    elif(current_lexeme == "while"):
         While()
-    if lexer(current_lexeme) == "identifier":
+    elif lexer(current_lexeme) == "identifier":
         assign()
     else:        
         print("Error: Expected {, if, return, put, get, or 'identifier' but instead recieved: " + current_lexeme)
@@ -716,21 +719,23 @@ def While():
 def Print():
     global current_lexeme
     global position_in_list
-    print("<While> -> while ( <Condition> ) <Statement> whileend")
+    print("<Print> -> put (<Expression>)")
     print("Current lexeme is: " + current_lexeme)
-    if (current_lexeme == "while"):
+    if (current_lexeme == "put"):
         position_in_list +=1
         current_lexeme = list_of_lexemes[position_in_list]
         if(current_lexeme == "("):
             position_in_list +=1
             current_lexeme = list_of_lexemes[position_in_list]
-            Condition()
+            expression()
             position_in_list +=1
             current_lexeme = list_of_lexemes[position_in_list]
             if (current_lexeme == ")"):
                 position_in_list +=1
                 current_lexeme = list_of_lexemes[position_in_list]
-                statement()
+            else:
+                print("Error, expected ) but instead got: " + current_lexeme)
+               
 
 def Condition():
     global current_lexeme
