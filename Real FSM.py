@@ -10,9 +10,13 @@ current_lexeme = None
 global list_of_lexemes
 global position_in_list
 global assembly
+global memory_address # by Dan
+global current_type # by Dan
 
 assembly = []
 list_of_lexemes = []
+list_of_types = [] # by Dan
+symbol_table = {} # by Dan
 
 #Array to hold the integer FSM
 intlist = [2,2]
@@ -435,17 +439,28 @@ def Parameter():
 def qualifier():
     global current_lexeme
     global position_in_list
+    global current_type
     print("Current lexeme is: " + current_lexeme)
     print("<Qualifier -> int | boolean | real")
     if current_lexeme == "int":
+        if checkSymbolTable(current_lexeme):
+            current_type = "int"
+            list_of_types.append(current_type)
 ##        print("int")
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
-    elif current_lexeme == "true" or current_lexeme == "false":
+    # elif current_lexeme == "true" or current_lexeme == "false":
+    elif current_lexeme == "boolean":
+        if checkSymbolTable(current_lexeme):
+            current_type = "boolean"
+            list_of_types.append(current_type)
 ##        print("boolean")
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
-    elif (lexer(current_lexeme) == "real"):
+    elif (current_lexeme == "real"):
+        if checkSymbolTable(current_lexeme):
+            current_type = "real"
+            list_of_types.append(current_type)
 ##        print ("real")
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
@@ -458,6 +473,7 @@ def qualifier():
 def Body():
     global current_lexeme
     global position_in_list
+    global current_type
     print("<Body> -> { <Statement List> }")
     print("Current lexeme is: " + current_lexeme)
     if (len(current_lexeme) == 0):
@@ -472,7 +488,9 @@ def Body():
         current_lexeme = list_of_lexemes[position_in_list]
         statement_list()
         position_in_list += 1
-        current_lexeme = list_of_lexemes[position_in_list]        
+        current_lexeme = list_of_lexemes[position_in_list]
+
+        current_type = None
         if (current_lexeme != "}"):
             print("Error: Expected '}' but instead recieved: " + current_lexeme)     
 
@@ -499,6 +517,9 @@ def Declaration_List():
         print("Current lexeme is: " + current_lexeme)
         position_in_list+=1
         current_lexeme = list_of_lexemes[position_in_list]
+
+        if (current_lexeme == "int" or current_lexeme == "boolean" or current_lexeme == "real"):
+            Declaration_List()
         
 ##    if list_of_lexemes[position_in_list] == ";":
 ##        position_in_list +=1
@@ -517,17 +538,22 @@ def Declaration():
 def IDs():
     global current_lexeme
     global position_in_list
+    global memory_address
+    global current_type
     print("Current lexeme is: " + current_lexeme)
     print("<IDs> -> <Identifier> | <Identifier>, <IDs>")
     if (lexer(current_lexeme) != "identifier"):
         print("Error: Expected 'identifier' but instead recieved: " + current_lexeme)
     if (lexer(current_lexeme) == "identifier"):
+        symbol_table[current_lexeme] = memory_address # by Dan
+        memory_address += 1 # by Dan
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
         print("Current lexeme is: " + current_lexeme)
         if current_lexeme == ",":
             position_in_list +=1
             current_lexeme = list_of_lexemes[position_in_list]
+            list_of_types.append(current_type) # by Dan
             IDs()
         
             
@@ -888,12 +914,31 @@ def primary():
 def empty():
     print("<Empty> -> epsilon")    
 
+# by Dan
+def checkSymbolTable(identifier):
+    for key in symbol_table:
+        if key == identifier:
+            print(identifier + " has already been declared.")
+            return False
+    return True
 
 file = input("Please enter the name of a file to read.")
 position_in_list = 0
+memory_address = 5000 # by Dan
+current_type = None # by dan
 lexer2(file)
 print(list_of_lexemes)
 rat18f()
 print (assembly)
+
+
+# by Dan
+print("\n\n\n")
+print(list_of_types)
+print("\t\t\tSymbol Table\t\t\t")
+print("Identifier\tMemory Location\tType")
+index_in_type = 0
+for key, value in sorted(symbol_table.iteritems(), key = lambda (k,v): (v,k)):
+        print("%s\t\t%d\t\t%s" % (key,value,list_of_types[index_in_type]))
 
 q = input("Press any key to exit")
