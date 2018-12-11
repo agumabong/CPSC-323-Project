@@ -90,7 +90,7 @@ def real(word):
         return False
 
 #Lists to store the different types of keywords, operators and seperators
-keywords = ["if", "while", "for", "whileend", "else", "ifend", "whileend", "get", "put", "and", "true", "false", "int", "function", "return"]
+keywords = ["if", "while", "for", "whileend", "else", "ifend", "whileend", "get", "put", "and", "true", "false", "int", "function", "return", "boolean", "real"]
 operators = ["+","-","*","/","%", "=", "<",">", "|", ":"]
 sep = ["(", ")", "[", "]", "{","}", "$$" , ";", ","]
 
