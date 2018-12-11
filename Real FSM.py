@@ -443,24 +443,21 @@ def qualifier():
     print("Current lexeme is: " + current_lexeme)
     print("<Qualifier -> int | boolean | real")
     if current_lexeme == "int":
-        if checkSymbolTable(current_lexeme):
-            current_type = "int"
-            list_of_types.append(current_type)
+        current_type = "int"
+        list_of_types.append(current_type)
 ##        print("int")
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
     # elif current_lexeme == "true" or current_lexeme == "false":
     elif current_lexeme == "boolean":
-        if checkSymbolTable(current_lexeme):
-            current_type = "boolean"
-            list_of_types.append(current_type)
+        current_type = "boolean"
+        list_of_types.append(current_type)
 ##        print("boolean")
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
     elif (current_lexeme == "real"):
-        if checkSymbolTable(current_lexeme):
-            current_type = "real"
-            list_of_types.append(current_type)
+        current_type = "real"
+        list_of_types.append(current_type)
 ##        print ("real")
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
@@ -545,8 +542,9 @@ def IDs():
     if (lexer(current_lexeme) != "identifier"):
         print("Error: Expected 'identifier' but instead recieved: " + current_lexeme)
     if (lexer(current_lexeme) == "identifier"):
-        symbol_table[current_lexeme] = memory_address # by Dan
-        memory_address += 1 # by Dan
+        if checkSymbolTable(current_lexeme):
+            symbol_table[current_lexeme] = memory_address # by Dan
+            memory_address += 1 # by Dan
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
         print("Current lexeme is: " + current_lexeme)
@@ -555,7 +553,7 @@ def IDs():
             current_lexeme = list_of_lexemes[position_in_list]
             list_of_types.append(current_type) # by Dan
             IDs()
-        
+        current_type = None
             
         
 
@@ -917,6 +915,7 @@ def empty():
 # by Dan
 def checkSymbolTable(identifier):
     for key in symbol_table:
+        print("\n\nThis is the key: " + key + " and this is the identifier " + identifier + "\n\n")
         if key == identifier:
             print(identifier + " has already been declared.")
             return False
@@ -938,7 +937,8 @@ print(list_of_types)
 print("\t\t\tSymbol Table\t\t\t")
 print("Identifier\tMemory Location\tType")
 index_in_type = 0
-for key, value in sorted(symbol_table.iteritems(), key = lambda (k,v): (v,k)):
-        print("%s\t\t%d\t\t%s" % (key,value,list_of_types[index_in_type]))
 
+for key, value in sorted(symbol_table.iteritems(), key = lambda (k,v): (v,k)):
+    print("%s\t\t%d\t\t\t\t%s" % (key,value,list_of_types[index_in_type]))
+    index_in_type += 1
 q = input("Press any key to exit")
