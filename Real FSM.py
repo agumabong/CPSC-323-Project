@@ -142,8 +142,11 @@ def lexer2(file_name):
             if (comment == True):
                 #print(clist[k] + "\t" + "Comment")
                 continue
+
             
             
+            
+
             #Check to see if there is an seperator at the beginning of the word. If there is, separate it from the word and print out the seperator and then the token that encapsulates it.
             if (pword[0] in sep and pword[len(pword)-1] in sep):
                 print(pword[0] + "\t \t \t" + "Seperator")
@@ -177,12 +180,42 @@ def lexer2(file_name):
                 print(lsep + "\t \t \t" + "Seperator")
                 list_of_lexemes.append(zsep)
                 print(zsep + "\t \t \t" + "Seperator")
+
+            #######################################    
+            if (pword[0] in sep):
+                print(pword[0] + "\t \t \t" + "Seperator")
+                fsep = pword[0]
+                list_of_lexemes.append(pword[0])
+                if (len(pword) ==1 ):
+                    continue
+                if pword == '' or pword == "":
+                    continue
+                pword = pword[1:]
+                if (iden(pword) == True):
+                    print(pword + "\t \t \t" + "Identifier")
+                    list_of_lexemes.append(pword)
+                elif(real(pword) == True):
+                    print(pword + "\t \t \t" + "real")
+                    list_of_lexemes.append(pword)
+                elif(integer(pword) == True):
+                    print(pword + "\t \t \t" + "Integer")
+                    list_of_lexemes.append(pword)
+
+
+                
             #Check to see if there is an seperator at the end of the word. If there is, separate it from the word and print out the seperator and then the token that encapsulates it.
             elif(pword[len(pword)-1] in sep):
+                print(pword)
+                if (pword[len(pword)-1] == ";" and pword[len(pword)-2] in sep):
+                    q = len(pword)-1                        
+                    zsep = pword[q:]
+                    pword = pword[:q]
                 pend = pword[len(pword)-1]
                 pword = pword[:-1]
                 if pword == '' or pword == "":
                     continue
+                
+                
                 if (iden(pword) == True):
                     print(pword + "\t \t \t" + "Identifier")
                     list_of_lexemes.append(pword)
@@ -519,12 +552,14 @@ def statement():
 ##        print ("Found empty lexeme, skipping.")
 ##        print("Current lexeme is: " + current_lexeme)
     if current_lexeme == "{":
-        compound()    
+        compound()
+    if (current_lexeme == "}"):
+            print("Current lexeme is: " + current_lexeme)
     if (current_lexeme == "if"):
         If()
     if(current_lexeme == "return"):
         Return()
-    if(current_lexeme == "put"):
+    if(current_lexeme == "put" or current_lexeme == " put"):
         Print()
     if(current_lexeme == "get"):
         Scan()
@@ -659,18 +694,23 @@ def While():
     if (current_lexeme == "while"):
         position_in_list +=1
         current_lexeme = list_of_lexemes[position_in_list]
+        print("Current lexeme is: " + current_lexeme)
         if(current_lexeme == "("):
             position_in_list+=1
             current_lexeme = list_of_lexemes[position_in_list]
+            print("Current lexeme is: " + current_lexeme)
             Condition()
             position_in_list +=1
             current_lexeme = list_of_lexemes[position_in_list]
+            print("Current lexeme is: " + current_lexeme)
             if(current_lexeme == ")"):
                 position_in_list +=1
                 current_lexeme = list_of_lexemes[position_in_list]
+                print("Current lexeme is: " + current_lexeme)
                 statement()
                 position_in_list+=1
                 current_lexeme = list_of_lexemes[position_in_list]
+                print("Current lexeme is: " + current_lexeme)
                 
 
 def Print():
@@ -848,7 +888,6 @@ file = input("Please enter the name of a file to read.")
 position_in_list = 0
 lexer2(file)
 print(list_of_lexemes)
-
 rat18f()
 print (assembly)
 
