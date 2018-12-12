@@ -580,7 +580,6 @@ def statement():
     elif(current_lexeme == "return"):
         Return()
     elif(current_lexeme == "put"):
-        print("found put")
         Print()
     elif(current_lexeme == "get"):
         Scan()
@@ -599,12 +598,14 @@ def compound():
     print("Current lexeme is: " + current_lexeme)
     if (current_lexeme != "{"):
         print("Error: Expected '{' but instead recieved: " + current_lexeme)
-    if (current_lexeme == "{"):        
+    if (current_lexeme == "{"):
+        assembly.append("JUMPZ")
         position_in_list +=1
         current_lexeme = list_of_lexemes[position_in_list]        
         statement_list()
         position_in_list +=1
         current_lexeme = list_of_lexemes[position_in_list]
+        assembly.append("JUMP")
         print(" " + current_lexeme)
   
 
@@ -747,6 +748,7 @@ def While():
     print("Current lexeme is: " + current_lexeme)
     print("<While> -> while (<Condition>) <Statement> whileend")
     if (current_lexeme == "while"):
+        assembly.append("LABEL")
         position_in_list +=1
         current_lexeme = list_of_lexemes[position_in_list]
         print("Current lexeme is: " + current_lexeme)
@@ -754,9 +756,7 @@ def While():
             position_in_list+=1
             current_lexeme = list_of_lexemes[position_in_list]
             print("Current lexeme is: " + current_lexeme)
-            Condition()
-
-            print("Current lexeme is WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO: " + current_lexeme)            
+            Condition()                
             if(current_lexeme == ")"):
                 position_in_list +=1
                 current_lexeme = list_of_lexemes[position_in_list]
