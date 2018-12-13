@@ -302,14 +302,15 @@ def lexer(token):
         return "integer"   
 
 def rat18f():
-    # Maybe print out the file?
     global current_lexeme
     global position_in_list
+
     print("<Rat18F> -> <Opt Function Definitions> $$ <Opt Declaration List> <Statement List> $$")
     current_lexeme = list_of_lexemes[position_in_list]
+    print("Rat18f(): current lex: " + current_lexeme + "\n")
+
     Opt_Function_Definitions()
-    #position_in_list +=1
-    current_lexeme = list_of_lexemes[position_in_list]
+
     print("Current lexeme is: " + current_lexeme)
     #position_in_list+=1
     current_lexeme = list_of_lexemes[position_in_list]
@@ -344,8 +345,9 @@ def rat18f():
 def Opt_Function_Definitions():
     global current_lexeme
     global position_in_list
-    print("Current lexeme is: " + current_lexeme)
+
     print("<Opt Function Definitions> -> <Function Definitions> | <Empty>")
+    print("Opt_Function_Definition(): Current lexeme is: " + current_lexeme + "\n")
     if (current_lexeme != "function"):
         empty()
     else:
@@ -356,84 +358,116 @@ def Opt_Function_Definitions():
 def Function_Definitions():
     global current_lexeme
     global position_in_list
-    print("Current lexeme is: " + current_lexeme)
+
     print ("<Function Definitions> -> <Functions> | <Functions> < Function Definitions>")
+    print("Function_Defintions: Current lexeme is: " + current_lexeme + "\n")
     Function()
+
+
 
 def Function():
     global current_lexeme
     global position_in_list
+
     print ("<Function> -> function <Identifier> ( <Opt Parameter List> ) <Opt Declaration List> <Body>")
-    if (current_lexeme != "function"):
-        print("Error: Expected 'function' but instead recieved: " + current_lexeme)
-    if (current_lexeme == "function"):
+    print("Function(): current lexeme is: " + current_lexeme)
+
+    if current_lexeme != "function":
+        print("Error: Expected 'function' but instead received: " + current_lexeme)
+
+    if current_lexeme == "function":
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
-##        print ("Found function")
-        print("Current lexeme is: " + current_lexeme)
-        if(lexer(current_lexeme) != "identifier"):
-            print("Error: Expected 'identifier' but instead recieved: " + current_lexeme)
-        if (lexer(current_lexeme) == "identifier"):
+        print("Function(): Found 'function'; inc: Current lexeme is: " + current_lexeme + "\n")
+
+        if lexer(current_lexeme) != "identifier":
+            print("Error: Expected 'identifier' but instead received: " + current_lexeme)
+
+        if lexer(current_lexeme) == "identifier":
             position_in_list+=1
             current_lexeme = list_of_lexemes[position_in_list]
-##            print("Finished with function and identifier, moving to Opt parameter list")
-            print("Current lexeme is: " + current_lexeme)
-            if (current_lexeme != "("):
+            print("Function(): Found 'identifier'; inc: Current lexeme is: " + current_lexeme + "\n")
+
+            if current_lexeme != "(":
                 print("Error: Expected '(' but instead recieved: " + current_lexeme)
-            if (current_lexeme == "("):
+
+            if current_lexeme == "(":
                 position_in_list +=1
                 current_lexeme = list_of_lexemes[position_in_list]
+                print("Function(): Found '('; inc: Current lexeme is: " + current_lexeme + "\n")
+
                 Opt_Parameter_List()
-                print ("Finished Opt Parameter List")
-                print("Current lexeme is: " + current_lexeme)
-                if (current_lexeme != ")"):
-                    print("Error: Expected ')' but instead recieved: " + current_lexeme)
-                if (current_lexeme == ")"):
+
+                print ("Function(): Finished Opt Parameter List; Current lexeme is: " + current_lexeme)
+
+                if current_lexeme != ")":
+                    print("Error: Expected ')' but instead received: " + current_lexeme)
+
+                if current_lexeme == ")":
                     position_in_list +=1
                     current_lexeme = list_of_lexemes[position_in_list]
+                    print("Function(): Found ')'; inc: Current lexeme is: " + current_lexeme + "\n")
+
                     Opt_Declaration_List()
-                    print ("Finished with Opt Declaration List")
-                    print("Current lexeme is: " + current_lexeme)
+
+                    print ("Finished with Opt Declaration List; Current lexeme is: " + current_lexeme)
+
                     Body()
-                    print("Finished with Body")
-                    print("Current lexeme is: " + current_lexeme)
-                    position_in_list+=1
-                    current_lexeme = list_of_lexemes[position_in_list]
+
+                    print("Finished with Body; Current lexeme is: " + current_lexeme)
                 else:
-                    print("Expected ')', but instead recieved" + current_lexeme)
+                    print("Expected ')', but instead received" + current_lexeme)
         
         
 
 def Opt_Parameter_List():
     global current_lexeme
-    print("Current lexeme is: " + current_lexeme)
+
     print("<Opt Parameter List> -> <Parameter List> | <Empty>")
+    print("Opt_parameter list(): Current lexeme is: " + current_lexeme + "\n")
+
     if (current_lexeme == "" or current_lexeme == ''):
         empty()
     else:
         Parameter_List()
 
+
+
 def Parameter_List():
-    print("Current lexeme is: " + current_lexeme)
+    global current_lexeme
+    global position_in_list
+    global list_of_lexemes
+
     print("<Parameter List> -> <Parameter> | <Parameter> , <Parameter List>")
+    print("Parameter_list(): Current lexeme is: " + current_lexeme + "\n")
+
     Parameter()
+
+    if current_lexeme == ",":
+        position_in_list += 1
+        current_lexeme = list_of_lexemes[position_in_list]
+
+        Parameter_List()
+
 
     
 def Parameter():
     global current_lexeme
     global position_in_list
-    print("Current lexeme is: " + current_lexeme)
+
     print ("<Parameter> -> <IDs> : <Qualifier>")
-    print("Inside parameter: before IDs(); current lexeme is " + current_lexeme)
+    print("Parameter(): current lexeme is " + current_lexeme + "\n")
+
     IDs()
-    print("Current lexeme is: " + current_lexeme)
-    if (current_lexeme != ":"):
-        print("Error: Expected ':' but instead recieved: " + current_lexeme)
-    if (current_lexeme == ":"):
+
+    if current_lexeme != ":":
+        print("Error: Expected ':' but instead received: " + current_lexeme)
+
+    if current_lexeme == ":":
         position_in_list +=1
         current_lexeme = list_of_lexemes[position_in_list]
-##        print("Finished with IDs, going to qualifier")
-##        print ("Current lexeme is: " + current_lexeme)
+        print("Parameter(): Found ':'; inc: current lexeme is " + current_lexeme + "\n")
+
         qualifier()
 
 
@@ -441,199 +475,260 @@ def qualifier():
     global current_lexeme
     global position_in_list
     global current_type
-    print("Current lexeme is: " + current_lexeme)
+
     print("<Qualifier -> int | boolean | real")
+    print("Qualifier(): Current lexeme is: " + current_lexeme + "\n")
+
     if current_lexeme == "int":
         current_type = "int"
         list_of_types.append(current_type)
-##        print("int")
+
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
-    #elif current_lexeme == "true" or current_lexeme == "false":
+        print("Qualifier(): Found 'int'; inc: current lexeme is " + current_lexeme)
+
     elif current_lexeme == "boolean":
         current_type = "boolean"
         list_of_types.append(current_type)
-##        print("boolean")
+
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
+        print("Qualifier(): Found 'boolean'; inc: current lexeme is " + current_lexeme)
+
     elif current_lexeme == "real":
         current_type = "real"
         list_of_types.append(current_type)
-##        print ("real")
+
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
+        print("Qualifier(): Found 'real'; inc: current lexeme is " + current_lexeme)
+
     else:
-        print("Error: Expected 'identifier' but instead recieved: " + current_lexeme)
+        print("Error: Expected 'identifier' but instead received: " + current_lexeme)
                                          
     
-
 
 def Body():
     global current_lexeme
     global position_in_list
     global current_type
+
     print("<Body> -> { <Statement List> }")
-    print("Current lexeme is: " + current_lexeme)
-    if (len(current_lexeme) == 0):
+    print("Body(): Current lexeme is: " + current_lexeme + "\n")
+
+    if len(current_lexeme) == 0:
         position_in_list +=1
         current_lexeme = list_of_lexemes[position_in_list]
+        print("Body(): current_lexeme is " + current_lexeme)
 ##        print("Found empty position, increasing.")
 ##        print("Current lexeme is: " + current_lexeme)
-    if (current_lexeme != "{"):
-        print("Error: Expected '{' but instead recieved: " + current_lexeme)
-    if (current_lexeme == "{"):
+
+    if current_lexeme != "{":
+        print("Error: Expected '{' but instead received: " + current_lexeme)
+
+    if current_lexeme == "{":
         position_in_list +=1
         current_lexeme = list_of_lexemes[position_in_list]
+        print("Body(): Found '{': inc; current lexeme is: " + current_lexeme + "\n")
+
         statement_list()
-        position_in_list += 1
-        current_lexeme = list_of_lexemes[position_in_list]
+
         current_type = None
         if (current_lexeme != "}"):
-            print("Error: Expected '}' but instead recieved: " + current_lexeme)     
+            print("Error: Expected '}' but instead received: " + current_lexeme)
+        if current_lexeme == "}":
+            position_in_list += 1
+            current_lexeme = list_of_lexemes[position_in_list]
+            print("Body(): Found '}': inc; current lexeme is: " + current_lexeme + "\n")
 
 
 
 def Opt_Declaration_List():
-    print("Current lexeme is: " + current_lexeme)
-    print ("<Opt Declaration List> -> <Declaration List> | <Empty>")    
-    if (current_lexeme == "int" or current_lexeme == "boolean" or current_lexeme == "real"):
+    print("<Opt Declaration List> -> <Declaration List> | <Empty>")
+    print("Opt_declaration_list(): Current lexeme is: " + current_lexeme + "\n")
+
+    if current_lexeme == "int" or current_lexeme == "boolean" or current_lexeme == "real":
         Declaration_List()
     else:
         empty()
 
+
+
 def Declaration_List():          
     global current_lexeme
     global position_in_list
-    print("Current lexeme is: " + current_lexeme)
+
     print("<Declaration List> -> <Declaration> ; | <Declaration> ; <Declaration List>")
+    print("Declaration_list(): Current lexeme is: " + current_lexeme + "\n")
+
     Declaration()
-    if (current_lexeme != ";"):
-        print("Error: Expected ';' but instead recieved: " + current_lexeme)
+
+    if current_lexeme != ";":
+        print("Error: Expected ';' but instead received: " + current_lexeme)
     else:
-        print("Current lexeme is: " + current_lexeme)
         position_in_list+=1
         current_lexeme = list_of_lexemes[position_in_list]
+        print("Declaration_list(): Current lexeme is: " + current_lexeme + "\n")
 
-        if (current_lexeme == "int" or current_lexeme == "boolean" or current_lexeme == "real"):
+        if current_lexeme == "int" or current_lexeme == "boolean" or current_lexeme == "real":
             Declaration_List()
         
-##    if list_of_lexemes[position_in_list] == ";":
-##        position_in_list +=1
-##        current_lexeme = list_of_lexemes[position_in_list]
+
 
 def Declaration():
     global current_lexeme
     global position_in_list
-    print("Current lexeme is: " + current_lexeme)
+
     print("<Declaration> -> <Qualifier> <IDs>")
+    print("Declaration(): Current lexeme is: " + current_lexeme + "\n")
+
     qualifier()
-##    position_in_list +=1
-##    current_lexeme = list_of_lexemes[position_in_list]
+
     IDs()
+
+
 
 def IDs():
     global current_lexeme
     global position_in_list
     global memory_address
     global current_type
-    print("Current lexeme is: " + current_lexeme)
+
+
     print("<IDs> -> <Identifier> | <Identifier>, <IDs>")
-    if (lexer(current_lexeme) != "identifier"):
-        print("Error: Expected 'identifier' but instead recieved: " + current_lexeme)
-    if (lexer(current_lexeme) == "identifier"):
+    print("IDs(): Current lexeme is: " + current_lexeme + "\n")
+
+    if lexer(current_lexeme) != "identifier":
+        print("Error: Expected 'identifier' but instead received: " + current_lexeme)
+
+    if lexer(current_lexeme) == "identifier":
         if checkSymbolTable(current_lexeme):
             symbol_table[current_lexeme] = memory_address # by Dan
             memory_address += 1 # by Dan
+
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
-        print("\n\n\n")
-        print("ID Lexeme is" + current_lexeme)
-        print("\n\n\n")
+        print("IDS(): Found 'identifier'; inc: current lexeme is " + current_lexeme + "\n")
+
         if current_lexeme == ",":
             position_in_list +=1
             current_lexeme = list_of_lexemes[position_in_list]
-            list_of_types.append(current_type) # by Dan
-            IDs()
-        current_type = None
-        
-        
-            
-        
+            print("IDS(): Found ','; inc: current lexeme is " + current_lexeme + "\n")
 
+            list_of_types.append(current_type) # by Dan
+
+            IDs()
+
+        current_type = None
+
+        
 
 def statement_list():
     global current_lexeme
-    global position_in_list    
-    print("Current lexeme is:" + current_lexeme)
-    print("\n\n\n")
+    global position_in_list
+
     print("<Statement List> -> <Statement> | <Statement> <Statement List>")
-    print("\n\n\n")
+    print("Statement List(): current_lexeme is " + current_lexeme)
+
     statement()
-    if (current_lexeme != "}" and current_lexeme != ";" and current_lexeme != "$$"):       
-        statement_list()  
-   
+
+    if current_lexeme == "(" or current_lexeme == "if" or current_lexeme == "return" or current_lexeme == "put" or current_lexeme == "get" or current_lexeme == "while" or lexer(current_lexeme) == "identifier":
+        statement_list()
 
 
 def statement():
     global current_lexeme
     global position_in_list
-    print("Current lexeme is: " + current_lexeme)
+
     print("<Statement -> <Compound> | <Assign> | <If> |  <Return> | <Print> | <Scan> | <While>")
-    current_lexeme = list_of_lexemes[position_in_list]
+    print("statement(): Current lexeme is: " + current_lexeme + "\n")
+
     # Separate transitions for each case
     if (len(current_lexeme) == 0):
         position_in_list +=1
         current_lexeme = list_of_lexemes[position_in_list]
 ##        print ("Found empty lexeme, skipping.")
 ##        print("Current lexeme is: " + current_lexeme)
+
     if current_lexeme == "{":
+        print("statement(): Found '{'; Current lexeme is " + current_lexeme + "\n")
         compound()
-    elif (current_lexeme == "}"):
-            print("Current lexeme is: " + current_lexeme)
-    elif (current_lexeme == "if"):
+    elif current_lexeme == "if":
+        print("statement(): Found 'if'; Current lexeme is " + current_lexeme + "\n")
         If()
-    elif(current_lexeme == "return"):
+    elif current_lexeme == "return":
+        print("statement(): Found 'return'; Current lexeme is " + current_lexeme + "\n")
         Return()
-    elif(current_lexeme == "put"):
-        print("found put")
+    elif current_lexeme == "put":
+        print("statement(): Found 'put'; Current lexeme is " + current_lexeme + "\n")
         Print()
-    elif(current_lexeme == "get"):
+    elif current_lexeme == "get":
+        print("statement(): Found 'get'; Current lexeme is " + current_lexeme + "\n")
         Scan()
-    elif(current_lexeme == "while"):
+    elif current_lexeme == "while":
+        print("statement(): Found 'while'; Current lexeme is " + current_lexeme + "\n")
         While()
     elif lexer(current_lexeme) == "identifier":
+        print("statement(): Found 'identifier'; Current lexeme is " + current_lexeme + "\n")
         assign()
     else:        
-        print("Error: Expected {, if, return, put, get, or 'identifier' but instead recieved: " + current_lexeme)
+        print("Error: Expected {, if, return, put, get, or 'identifier' but instead received: " + current_lexeme)
 
 
 def compound():
     global current_lexeme
     global position_in_list
+
     print("<Compound> -> { <Statement List> }")
-    print("Current lexeme is: " + current_lexeme)
-    if (current_lexeme != "{"):
-        print("Error: Expected '{' but instead recieved: " + current_lexeme)
-    if (current_lexeme == "{"):        
-        position_in_list +=1
-        current_lexeme = list_of_lexemes[position_in_list]        
-        statement_list()
-        position_in_list +=1
+    print("compound(): Current lexeme is: " + current_lexeme + "\n")
+    if current_lexeme != "{":
+        print("Error: Expected '{' but instead received: " + current_lexeme)
+
+    if current_lexeme == "{":
+        position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
-        print(" " + current_lexeme)
+        print("compound(): Found '{'; inc: Current lexeme is: " + current_lexeme + "\n")
+
+        statement_list()
+
+        if current_lexeme != "}":
+            print("Error: Expected '}' but instead received: " + current_lexeme)
+
+        if current_lexeme == "}":
+            position_in_list += 1
+            current_lexeme = list_of_lexemes[position_in_list]
+            print("compound(): Found '}'; inc: Current lexeme is: " + current_lexeme + "\n")
   
 
 
 def assign():
     global current_lexeme
     global position_in_list
-    print("Current lexeme is: " + current_lexeme)
+
     print("<Assign> -> <Identifier> = <Expression> ;")
-    if (lexer(current_lexeme) != "identifier"):
-        print("Error: Expected 'identifier' but instead recieved: " + current_lexeme)
+    print("assign(): Current lexeme is: " + current_lexeme + "\n")
+
+    if lexer(current_lexeme) != "identifier":
+        print("Error: Expected 'identifier' but instead received: " + current_lexeme)
         
     if lexer(current_lexeme) == "identifier":
-        if list_of_lexemes[position_in_list + 1] == "=":
+        position_in_list += 1
+        current_lexeme = list_of_lexemes[position_in_list]
+        print("assign(): Found 'identifier'; inc: Current lexeme is: " + current_lexeme + "\n")
+
+        if current_lexeme == "=":
+            position_in_list += 1
+            current_lexeme = list_of_lexemes[position_in_list]
+            print("assign(): Found '='; inc: Current lexeme is: " + current_lexeme + "\n")
+
+            expression()
+
+            if current_lexeme == ";":
+                position_in_list += 1
+                current_lexeme = list_of_lexemes[position_in_list]
+                print("assign(): Found ';'; inc: Current lexeme is: " + current_lexeme + "\n")
+        """
+         if list_of_lexemes[position_in_list + 1] == "=":
             
             position_in_list += 2
             current_lexeme = list_of_lexemes[position_in_list]
@@ -665,12 +760,12 @@ def assign():
                     assembly.append("PUSHI " + list_of_lexemes[position_in_list-2])
                 if(lexer(list_of_lexemes[position_in_list-4]) == "identifier"):
                     assembly.append("POPM " + list_of_lexemes[position_in_list-4])
-            
-                
+            """
 
-            
     else:
         print("There's in error in assign()")
+
+
 
 def If():
     global current_lexeme
@@ -713,12 +808,13 @@ def Return():
     print("Current lexeme is: " + current_lexeme)    
     print("<Return> -> return ; | return <Expression>")
     if (current_lexeme == "return"):       
-       print("Current lexeme is: " + current_lexeme)
+       print("Inside Return; Current lexeme is: " + current_lexeme)
+       position_in_list += 1
+       current_lexeme = list_of_lexemes[position_in_list]
+       print(current_lexeme)
        if (current_lexeme == ";"):
            print ("return ;")
        else:
-           position_in_list +=1
-           current_lexeme = list_of_lexemes[position_in_list]
            expression()
     else:
         print("Error, expected return but instead recieved: " + current_lexeme)
@@ -921,9 +1017,10 @@ def term_prime():
             assembly.append("MUL")
         elif current_lexeme == "/":
             assembly.append("DIV")
+        print("inside term prime; found: " + current_lexeme)
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
-        print("Current lexeme is: " + current_lexeme)
+        print("Current lexeme is after inc: " + current_lexeme)
         factor()
         term_prime()
     elif current_lexeme == "epsilon":
@@ -955,6 +1052,7 @@ def primary():
     if lexer(current_lexeme) == "identifier":
         print("\n")
         print(assembly)
+        print "This is the current lexeme in primary: " + current_lexeme
         print("\n")
         if list_of_lexemes[position_in_list + 1] == "(":
             position_in_list += 1
@@ -980,10 +1078,12 @@ def primary():
                 current_lexeme = "epsilon"
             
     elif lexer(current_lexeme) == "integer":
+        print("\nFOUND AN INT: " + current_lexeme + "\n")
         position_in_list += 1
         current_lexeme = list_of_lexemes[position_in_list]
+        print("\ncurrent lexeme after integer " + current_lexeme + "\n")
         if (list_of_lexemes[position_in_list] == "*" or list_of_lexemes[position_in_list] == "+" or list_of_lexemes[position_in_list] == "-" or list_of_lexemes[position_in_list] == "/"):
-                current_lexeme = list_of_lexemes[position_in_list]
+            current_lexeme = list_of_lexemes[position_in_list]
         if (current_lexeme == ";"):
             position_in_list+=1
             #current_lexeme = list_of_lexemes[position_in_list]
@@ -993,6 +1093,7 @@ def primary():
     elif current_lexeme == "(":
         position_in_list +=1
         current_lexeme = list_of_lexemes[position_in_list]
+        print("\nFOUND '(' and after inc; current_lexeme: " + current_lexeme)
         expression()
         position_in_list +=1
         current_lexeme = list_of_lexemes[position_in_list]
@@ -1020,7 +1121,7 @@ def empty():
 # by Dan
 def checkSymbolTable(identifier):
     for key in symbol_table:
-        print("\n\nThis is the key: " + key + " and this is the identifier " + identifier + "\n\n")
+        #print("\n\nThis is the key: " + key + " and this is the identifier " + identifier + "\n\n")
         if key == identifier:
             print(identifier + " has already been declared.")
             return False
@@ -1033,6 +1134,7 @@ memory_address = 5000 # by Dan
 current_type = None # by dan
 lexer2(file)
 print(list_of_lexemes)
+print("\n\n")
 rat18f()
 for i in range(len(assembly)):
     print(str(i+1) + " " + assembly[i])
